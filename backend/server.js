@@ -18,10 +18,17 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 /* =======================
    MongoDB Connection
 ======================= */
+if (!process.env.MONGO_URI) {
+  console.error("❌ ERROR: MONGO_URI is not defined in environment variables!");
+}
+
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err));
+  .then(() => console.log("✅ MongoDB Connected Successfully"))
+  .catch((err) => {
+    console.error("❌ MongoDB Connection Error:");
+    console.error(err);
+  });
 
 /* =======================
    Models
