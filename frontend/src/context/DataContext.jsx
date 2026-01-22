@@ -8,7 +8,7 @@ export function DataProvider({ children }) {
   const [customers, setCustomers] = useState([]);
   const [sales, setSales] = useState({ total: 0, profit: 0 });
 
-  const fetchAllData = async () => {
+  const fetchOrders = async () => {
     try {
       const [ordersRes, designsRes] = await Promise.all([
         fetch(`${import.meta.env.VITE_API_URL}/api/orders`),
@@ -28,7 +28,7 @@ export function DataProvider({ children }) {
   };
 
   useEffect(() => {
-    fetchAllData();
+    fetchOrders();
   }, []);
 
   // Calculate derived data whenever orders change
