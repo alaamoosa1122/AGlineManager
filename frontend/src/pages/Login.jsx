@@ -31,7 +31,8 @@ function Login() {
                 setError(data.message || "Invalid credentials");
             }
         } catch (err) {
-            setError("Server error. Try again later.");
+            alert("Server error: " + err.message);
+            console.error(err);
         }
     };
 
