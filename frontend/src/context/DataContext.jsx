@@ -10,7 +10,7 @@ export function DataProvider({ children }) {
 
   const fetchOrders = async () => {
     try {
-      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+      const baseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
       const [ordersRes, designsRes] = await Promise.all([
         fetch(`${baseUrl}/api/orders`),
         fetch(`${baseUrl}/api/designs`)
