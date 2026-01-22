@@ -71,7 +71,8 @@ function Orders() {
   const handleDeleteOrder = async (id) => {
     if (!window.confirm("Are you sure you want to delete this order?")) return;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/${id}`, {
+      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/api/orders/${id}`, {
         method: "DELETE",
       });
       if (res.ok) {

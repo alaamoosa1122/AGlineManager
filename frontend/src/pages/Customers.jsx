@@ -7,7 +7,8 @@ function Customers() {
   // جلب الطلبات من السيرفر
   const fetchOrders = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`);
+      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/api/orders`);
       const data = await res.json();
       setOrders(data);
     } catch (err) {
@@ -18,7 +19,8 @@ function Customers() {
   // تبديل حالة الاستلام
   const toggleDelivered = async (id, currentValue) => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/${id}`, {
+      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/api/orders/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isDelivered: !currentValue }),
@@ -44,7 +46,8 @@ function Customers() {
   const handleDeleteOrder = async (id) => {
     if (!window.confirm("Are you sure you want to delete this customer record?")) return;
     try {
-      const res = await fetch(`http://localhost:3001/api/orders/${id}`, {
+      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/api/orders/${id}`, {
         method: "DELETE",
       });
       if (res.ok) {

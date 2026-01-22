@@ -28,7 +28,8 @@ function Designs() {
   const handleDeleteDesign = async (id) => {
     if (!window.confirm("Are you sure you want to delete this design?")) return;
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/designs/${id}`, {
+      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/api/designs/${id}`, {
         method: "DELETE",
       });
       if (res.ok) {
