@@ -46,6 +46,7 @@ function Login() {
 
                 <form onSubmit={handleLogin} style={styles.form}>
                     <h2 style={styles.title}>Welcome Back</h2>
+                    <p style={{ fontSize: '10px', color: '#ccc' }}>v1.0.2 - API: {import.meta.env.VITE_API_URL}</p>
 
                     {error && <p style={styles.error}>{error}</p>}
 
