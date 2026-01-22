@@ -8,29 +8,27 @@ export function DataProvider({ children }) {
   const [customers, setCustomers] = useState([]);
   const [sales, setSales] = useState({ total: 0, profit: 0 });
 
-  const fetchOrders = async () => {
+  const fetchAllData = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`);
-      const data = await res.json();
-      setOrders(data);
-    } catch (err) {
-      console.error("Failed to fetch orders:", err);
-    }
-  };
+      const [ordersRes, designsRes] = await Promise.all([
+        fetch(`${import.meta.env.VITE_API_URL}/api/orders`),
+        fetch(`${import.meta.env.VITE_API_URL}/api/designs`)
+      ]);
 
-  const fetchDesigns = async () => {
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/designs`);
-      const data = await res.json();
-      setDesigns(data);
+      const [ordersData, designsData] = await Promise.all([
+        ordersRes.json(),
+        designsRes.json()
+      ]);
+
+      setOrders(ordersData);
+      setDesigns(designsData);
     } catch (err) {
-      console.error("Failed to fetch designs:", err);
+      console.error("Failed to fetch data:", err);
     }
   };
 
   useEffect(() => {
-    fetchOrders();
-    fetchDesigns();
+    fetchAllData();
   }, []);
 
   // Calculate derived data whenever orders change
