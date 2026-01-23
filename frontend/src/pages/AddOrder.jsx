@@ -58,7 +58,7 @@ function AddOrder() {
         ...form,
         createdAt: new Date(form.createdAt).toISOString(),
       };
-      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+      const baseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
       const res = await fetch(`${baseUrl}/api/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

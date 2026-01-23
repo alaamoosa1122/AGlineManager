@@ -31,7 +31,7 @@ function AddDesign() {
     e.preventDefault();
 
     try {
-      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+      const baseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
       const res = await fetch(`${baseUrl}/api/designs`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

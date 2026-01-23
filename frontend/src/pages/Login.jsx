@@ -11,7 +11,7 @@ function Login() {
         e.preventDefault();
 
         try {
-            const baseUrl = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+            const baseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
             const res = await fetch(`${baseUrl}/api/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -47,7 +47,7 @@ function Login() {
 
                 <form onSubmit={handleLogin} style={styles.form}>
                     <h2 style={styles.title}>Welcome Back</h2>
-                   
+
                     {error && <p style={styles.error}>{error}</p>}
 
                     <div style={styles.inputGroup}>

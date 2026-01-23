@@ -1,25 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { DataContext } from "../context/DataContext";
 
 function Designs() {
-  const [designs, setDesigns] = useState([]);
+  const { designs, fetchOrders } = useContext(DataContext);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
-  const location = useLocation(); // 👈 مهم
-
-  const fetchDesigns = async () => {
-    try {
-      const res = await fetch("http://localhost:3001/api/designs");
-      const data = await res.json();
-      setDesigns(data);
-    } catch (err) {
-      console.error("Error fetching designs:", err);
-    }
-  };
+  const location = useLocation();
 
   // 🔥 يعيد الجلب كل مرة تدخل الصفحة
   useEffect(() => {
-    fetchDesigns();
+    fetchOrders();
   }, [location]);
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -28,12 +19,12 @@ function Designs() {
   const handleDeleteDesign = async (id) => {
     if (!window.confirm("Are you sure you want to delete this design?")) return;
     try {
-      const baseUrl = import.meta.env.VITE_API_URL.replace(/\/$/, "");
+      const baseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
       const res = await fetch(`${baseUrl}/api/designs/${id}`, {
         method: "DELETE",
       });
       if (res.ok) {
-        fetchDesigns();
+        fetchOrders();
       } else {
         alert("Failed to delete design");
       }
