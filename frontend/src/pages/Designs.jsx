@@ -73,10 +73,12 @@ function Designs() {
               />
               <div style={styles.info}>
                 <h3 style={styles.cardCode}>{d.code}</h3>
-                <div style={styles.priceRow}>
-                  <span style={styles.priceLabel}>Cost:</span>
-                  <span style={styles.priceValue}>{d.costPrice} OMR</span>
-                </div>
+                {isAdmin && (
+                  <div style={styles.priceRow}>
+                    <span style={styles.priceLabel}>Cost:</span>
+                    <span style={styles.priceValue}>{d.costPrice} OMR</span>
+                  </div>
+                )}
                 <div style={styles.priceRow}>
                   <span style={styles.priceLabel}>Sell:</span>
                   <span style={{ ...styles.priceValue, color: "#ff758c" }}>{d.sellingPrice} OMR</span>
