@@ -34,4 +34,6 @@ const designSchema = new mongoose.Schema(
   }
 );
 
+designSchema.index({ createdAt: -1 });
+
 export default mongoose.model("Design", designSchema);
