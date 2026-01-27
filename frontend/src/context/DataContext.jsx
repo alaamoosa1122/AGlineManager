@@ -56,9 +56,49 @@ export function DataProvider({ children }) {
     }
   }, [orders, designs]);
 
+  const updateOrder = async (id, updatedData) => {
+    try {
+      const baseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/api/orders/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (res.ok) {
+        await fetchOrders();
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error("Failed to update order:", err);
+      return false;
+    }
+  };
+
+  const updateDesign = async (id, updatedData) => {
+    try {
+      const baseUrl = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+      const res = await fetch(`${baseUrl}/api/designs/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (res.ok) {
+        await fetchOrders();
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error("Failed to update design:", err);
+      return false;
+    }
+  };
+
   return (
     <DataContext.Provider
-      value={{ orders, designs, customers, sales, fetchOrders }}
+      value={{ orders, designs, customers, sales, fetchOrders, updateOrder, updateDesign }}
     >
       {children}
     </DataContext.Provider>

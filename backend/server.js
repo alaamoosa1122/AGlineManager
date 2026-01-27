@@ -110,19 +110,25 @@ app.post("/api/orders", async (req, res) => {
   }
 });
 
-// تحديث الطلب (✔️ عند الاستلام تتغير الحالة تلقائيًا)
+// تحديث الطلب (✔️ يدعم تحديث جميع الحقول)
 app.put("/api/orders/:id", async (req, res) => {
   try {
-    const { isDelivered } = req.body; // تأكد أنه يأتي من العميل
+    const updateData = { ...req.body };
+
+    // إذا تم تغيير isDelivered، نحدث الحالة تلقائيًا
+    if (updateData.isDelivered !== undefined) {
+      updateData.status = updateData.isDelivered ? "تم الاستلام" : "New";
+    }
 
     const updated = await Order.findByIdAndUpdate(
       req.params.id,
-      {
-        isDelivered,
-        status: isDelivered ? "تم الاستلام" : "New",
-      },
-      { new: true } // لكي يرجع لك النسخة المحدثة
+      updateData,
+      { new: true, runValidators: true }
     );
+
+    if (!updated) {
+      return res.status(404).json({ error: "Order not found" });
+    }
 
     res.json(updated);
   } catch (err) {
@@ -161,6 +167,25 @@ app.post("/api/designs", async (req, res) => {
     const design = new Design(req.body);
     const saved = await design.save();
     res.status(201).json(saved);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// تحديث تصميم
+app.put("/api/designs/:id", async (req, res) => {
+  try {
+    const updated = await Design.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ error: "Design not found" });
+    }
+
+    res.json(updated);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

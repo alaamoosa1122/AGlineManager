@@ -3,9 +3,11 @@ import { DataContext } from "../context/DataContext";
 import { useNavigate } from "react-router-dom";
 
 function Orders() {
-  const { orders, fetchOrders } = useContext(DataContext);
+  const { orders, fetchOrders, updateOrder } = useContext(DataContext);
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingOrder, setEditingOrder] = useState(null);
+  const [editForm, setEditForm] = useState({});
 
   // لا نحتاج orderStatuses إذا كان هناك isDelivered موجود
   const getStatus = (order) => {
@@ -85,6 +87,37 @@ function Orders() {
     }
   };
 
+  const handleEditClick = (order) => {
+    setEditingOrder(order._id);
+    setEditForm({
+      customerName: order.customerName,
+      phone: order.phone,
+      abayaCode: order.abayaCode,
+      length: order.length,
+      width: order.width,
+      sleeveLength: order.sleeveLength,
+      deliveryLocation: order.deliveryLocation,
+      price: order.price,
+      deposit: order.deposit || 0,
+      notes: order.notes || "",
+    });
+  };
+
+  const handleEditSave = async () => {
+    const success = await updateOrder(editingOrder, editForm);
+    if (success) {
+      setEditingOrder(null);
+      setEditForm({});
+    } else {
+      alert("Failed to update order");
+    }
+  };
+
+  const handleEditCancel = () => {
+    setEditingOrder(null);
+    setEditForm({});
+  };
+
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Orders</h1>
@@ -112,7 +145,7 @@ function Orders() {
               <th style={styles.th}>Deposit</th>
               <th style={styles.th}>Notes</th>
               <th style={styles.th}>Status</th>
-              {isAdmin && <th style={styles.th}>Action</th>}
+              <th style={styles.th}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -144,16 +177,24 @@ function Orders() {
                       {getStatus(o)}
                     </span>
                   </td>
-                  {isAdmin && (
-                    <td style={styles.td}>
+                  <td style={styles.td}>
+                    <button
+                      onClick={() => handleEditClick(o)}
+                      style={styles.editBtn}
+                      title="Edit"
+                    >
+                      ✏️
+                    </button>
+                    {isAdmin && (
                       <button
                         onClick={() => handleDeleteOrder(o._id)}
                         style={styles.deleteBtn}
+                        title="Delete"
                       >
                         🗑️
                       </button>
-                    </td>
-                  )}
+                    )}
+                  </td>
                 </tr>
               ))}
           </tbody>
@@ -166,6 +207,127 @@ function Orders() {
       >
         +
       </button>
+
+      {/* Edit Modal */}
+      {editingOrder && (
+        <div style={styles.modalOverlay} onClick={handleEditCancel}>
+          <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <h2 style={styles.modalTitle}>Edit Order</h2>
+            <div style={styles.modalForm}>
+              <div style={styles.formRow}>
+                <div style={styles.formGroup}>
+                  <label style={styles.label}>Customer Name</label>
+                  <input
+                    type="text"
+                    value={editForm.customerName}
+                    onChange={(e) => setEditForm({ ...editForm, customerName: e.target.value })}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.formGroup}>
+                  <label style={styles.label}>Phone</label>
+                  <input
+                    type="text"
+                    value={editForm.phone}
+                    onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                    style={styles.input}
+                  />
+                </div>
+              </div>
+
+              <div style={styles.formRow}>
+                <div style={styles.formGroup}>
+                  <label style={styles.label}>Abaya Code</label>
+                  <input
+                    type="text"
+                    value={editForm.abayaCode}
+                    onChange={(e) => setEditForm({ ...editForm, abayaCode: e.target.value })}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.formGroup}>
+                  <label style={styles.label}>Delivery Location</label>
+                  <input
+                    type="text"
+                    value={editForm.deliveryLocation}
+                    onChange={(e) => setEditForm({ ...editForm, deliveryLocation: e.target.value })}
+                    style={styles.input}
+                  />
+                </div>
+              </div>
+
+              <div style={styles.formRow}>
+                <div style={styles.formGroup}>
+                  <label style={styles.label}>Length</label>
+                  <input
+                    type="text"
+                    value={editForm.length}
+                    onChange={(e) => setEditForm({ ...editForm, length: e.target.value })}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.formGroup}>
+                  <label style={styles.label}>Width</label>
+                  <input
+                    type="text"
+                    value={editForm.width}
+                    onChange={(e) => setEditForm({ ...editForm, width: e.target.value })}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.formGroup}>
+                  <label style={styles.label}>Sleeve Length</label>
+                  <input
+                    type="text"
+                    value={editForm.sleeveLength}
+                    onChange={(e) => setEditForm({ ...editForm, sleeveLength: e.target.value })}
+                    style={styles.input}
+                  />
+                </div>
+              </div>
+
+              <div style={styles.formRow}>
+                <div style={styles.formGroup}>
+                  <label style={styles.label}>Price (OMR)</label>
+                  <input
+                    type="number"
+                    value={editForm.price}
+                    onChange={(e) => setEditForm({ ...editForm, price: parseFloat(e.target.value) })}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.formGroup}>
+                  <label style={styles.label}>Deposit (OMR)</label>
+                  <input
+                    type="number"
+                    value={editForm.deposit}
+                    onChange={(e) => setEditForm({ ...editForm, deposit: parseFloat(e.target.value) })}
+                    style={styles.input}
+                  />
+                </div>
+              </div>
+
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Notes</label>
+                <textarea
+                  value={editForm.notes}
+                  onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                  style={{ ...styles.input, minHeight: "80px" }}
+                />
+              </div>
+
+              <div style={styles.modalActions}>
+                <button onClick={handleEditSave} style={styles.saveBtn}>
+                  Save Changes
+                </button>
+                <button onClick={handleEditCancel} style={styles.cancelBtn}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -256,6 +418,16 @@ const styles = {
     justifyContent: "center",
     transition: "transform 0.2s",
   },
+  editBtn: {
+    background: "none",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "18px",
+    padding: "5px",
+    marginRight: "8px",
+    borderRadius: "5px",
+    transition: "background 0.2s",
+  },
   deleteBtn: {
     background: "none",
     border: "none",
@@ -264,6 +436,95 @@ const styles = {
     padding: "5px",
     borderRadius: "5px",
     transition: "background 0.2s",
+  },
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 1000,
+  },
+  modal: {
+    background: "#fff",
+    borderRadius: "20px",
+    padding: "40px",
+    maxWidth: "700px",
+    width: "90%",
+    maxHeight: "90vh",
+    overflowY: "auto",
+    boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+  },
+  modalTitle: {
+    fontSize: "28px",
+    fontWeight: "700",
+    color: "#2c2c54",
+    marginBottom: "30px",
+    textAlign: "center",
+  },
+  modalForm: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
+  },
+  formRow: {
+    display: "flex",
+    gap: "15px",
+  },
+  formGroup: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+  },
+  label: {
+    fontSize: "14px",
+    fontWeight: "600",
+    color: "#555",
+    marginBottom: "8px",
+  },
+  input: {
+    padding: "12px",
+    fontSize: "15px",
+    borderRadius: "10px",
+    border: "1px solid #eee",
+    background: "#fcfcfc",
+    outline: "none",
+    transition: "border-color 0.2s",
+    fontFamily: "inherit",
+  },
+  modalActions: {
+    display: "flex",
+    gap: "15px",
+    marginTop: "10px",
+  },
+  saveBtn: {
+    flex: 1,
+    padding: "14px",
+    fontSize: "16px",
+    borderRadius: "12px",
+    border: "none",
+    background: "linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%)",
+    color: "#fff",
+    cursor: "pointer",
+    fontWeight: "600",
+    boxShadow: "0 5px 15px rgba(255, 117, 140, 0.2)",
+    transition: "transform 0.2s",
+  },
+  cancelBtn: {
+    flex: 1,
+    padding: "14px",
+    fontSize: "16px",
+    borderRadius: "12px",
+    border: "1px solid #eee",
+    background: "#fff",
+    color: "#666",
+    cursor: "pointer",
+    fontWeight: "600",
+    transition: "all 0.2s",
   },
 };
 
